@@ -1,4 +1,15 @@
 use chrono::{DateTime, Local};
+use mongodb::{
+    bson::doc,
+    results::{DeleteResult, InsertOneResult, UpdateResult},
+    sync::{Client, Collection},
+};
+use serde::{Deserialize, Serialize};
+use std::{
+    env,
+    io::{self, BufRead},
+    process,
+};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Note {
@@ -97,18 +108,18 @@ fn delete_note_task(
     collection.delete_one(doc! { "_id": note_id }, None)
 }
 
-fn add_note_to(collection: &mut Collection<Note>) -> mongodb::error::Result<InsertOneResult> {
-    let saved_notes = collection.find(None, None)?;
-    let id = saved_notes.count() + 1;
-    println!("Enter a title for the todo note:");
-    let title = read_line_from_stdin();
-    println!("Enter a description for the todo note:");
-    let description = read_line_from_stdin();
-    Note::new()
-        .with_id(id as i32)
-        .with_title(title)
-        .with_description(description)
-        .create()
-        .unwrap()
-        .save_to(collection)
-}
+// fn add_note_to(collection: &mut Collection<Note>) -> mongodb::error::Result<InsertOneResult> {
+//     let saved_notes = collection.find(None, None)?;
+//     let id = saved_notes.count() + 1;
+//     println!("Enter a title for the todo note:");
+//     let title = read_line_from_stdin();
+//     println!("Enter a description for the todo note:");
+//     let description = read_line_from_stdin();
+//     Note::new()
+//         .with_id(id as i32)
+//         .with_title(title)
+//         .with_description(description)
+//         .create()
+//         .unwrap()
+//         .save_to(collection)
+// }
