@@ -1,4 +1,4 @@
-pub mod models;
 pub mod controllers;
+pub mod models;
 
-pub use controllers::Index;
+pub use controllers::{Index, static_handler};

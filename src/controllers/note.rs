@@ -12,6 +12,13 @@ struct FormData {
 pub struct Index;
 
 impl Index {
+    // #[get("/")]
+    pub async fn root() -> HttpResponse {
+        HttpResponse::Ok()
+            .content_type("text/html; charset=utf-8")
+            .body(include_str!("../views/index.html"))
+    }
+
     pub async fn save_note(mut payload: Multipart) -> HttpResponse {
         while let Ok(Some(mut field)) = payload.try_next().await {
             let content_type = field.content_disposition().unwrap();
@@ -23,29 +30,14 @@ impl Index {
                 .unwrap();
 
             while let Ok(Some(chunk)) = field.try_next().await {
-                output_file = web::block(move || output_file.write_all(&chunk).map(|_| output_file))
-                    .await
-                    .unwrap();
+                output_file =
+                    web::block(move || output_file.write_all(&chunk).map(|_| output_file))
+                        .await
+                        .unwrap();
             }
         }
         HttpResponse::Ok()
             .content_type("text/html")
             .body("yay your upload is done")
-    }
-
-    // #[get("/")]
-    pub async fn get_notes() -> HttpResponse {
-        let response = r#"
-            <html>
-              <body>
-                <form target="/" method="post" enctype="multipart/form-data">
-                    <!-- <input type="file" method="post" name="uploaded-file" enctype="multipart/form"/> -->
-                    <!-- <input type="text" name="username"/> -->
-                    <input type="file" name="uploaded-file"/>
-                    <button type="submit">Submit</button>
-                </form>
-              </body>
-            </html>"#;
-        HttpResponse::Ok().content_type("text/html").body(response)
     }
 }
